@@ -105,6 +105,77 @@ app.post('/new-user', (req, res) => {
         })
     })
 })
+
+//Registrar cita
+app.post('/new-cita', (req, res) => {
+    let { nombre, email, telefono, edad, genero, date, time} = req.body
+    if(!nombre.length){
+        res.json({
+            'alerta': 'Falta el nombre'
+        })
+    }else if(!email.length){
+        res.json({
+            'alerta': 'Falta el email'
+        })
+    }else if(!telefono.length){
+        res.json({
+            'alerta': 'Falta el telefono'
+        })
+    }else if(!edad.length){
+        res.json({
+            'alerta': 'Falta la edad'
+        })
+    }
+    else if(!genero.length){
+        res.json({
+            'alerta': 'Falta el genero'
+        })
+    }else if(!date.length){
+        res.json({
+            'alerta': 'Falta la fecha'
+        })
+    }else if(!time.length){
+        res.json({
+            'alerta': 'Falta la hora'
+        })
+    }
+
+    const citas = collection(db, 'citas')
+    const formattedDate = date.replace(/-/g, '');  // Elimina las barras inclinadas de la fecha
+    const formattedTime = time.replace(':', '').replace(':', '');
+    getDoc(doc(citas, `${formattedDate}-${formattedTime}`)).then(cita => {
+        if (cita.exists()){
+            
+            res.json({
+                'alert': 'Ya existe una cita el mismo dia y hora'
+            })
+
+        }else{
+            const data = {
+                nombre,
+                email,
+                telefono, 
+                edad,
+                genero,
+                date,
+                time
+            }
+            setDoc(doc(citas, `${formattedDate}-${formattedTime}`), data).then(data => {
+                res.json({
+                    'alert': 'success',
+                    'message': 'Cita registrada exitosamente',
+                    data
+                })
+            })
+        }
+    }).catch(error => {
+        res.json({
+            'alert': 'Error de conexion'
+        })
+    })
+})
+
+//Conectar servidor
 app.listen(5020, () => {
     console.log('Servidor trabajando: 5020')
 })
