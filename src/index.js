@@ -175,6 +175,37 @@ app.post('/new-cita', (req, res) => {
     })
 })
 
+//Traer citas
+app.get('/get-citas', async (req, res) => {
+    try{
+       const citas = [];
+       const data = await collection(db, 'citas')
+       const docs = await getDocs(data)
+       const today = new Date()
+       docs.forEach((doc) => {
+        const cita = doc.data()
+        if (new Date(cita.date) > today) {
+            // La cita está en el futuro, por lo tanto, está pendiente
+            cita.status = 'upcoming'
+          } else {
+            // La cita ya pasó, por lo tanto, está cancelada
+            cita.status = 'cancelada'
+          }
+    
+        citas.push(cita)
+       })
+        res.json({
+            'alert': 'success',
+            citas
+        })
+    }catch (error) {
+        res.json({
+            'alert': 'error getting data',
+            error
+        })
+    }
+})
+
 //Conectar servidor
 app.listen(5020, () => {
     console.log('Servidor trabajando: 5020')
