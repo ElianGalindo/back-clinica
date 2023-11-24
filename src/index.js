@@ -30,10 +30,10 @@ app.use(express.json())
 
 //Ruta para login
 app.post('/login', (req, res) => {
-    const { email, password } = req.body
+    const { nombre, email, password } = req.body
     console.log('Datos recibidos en la solicitud:', req.body);
 
-    if(!email || !password) {
+    if(!nombre || !email || !password) {
         res.json({
             'alert':'faltan datos'
         })
@@ -63,17 +63,22 @@ app.post('/login', (req, res) => {
 
 //Registra usuario
 app.post('/new-user', (req, res) => {
-    let {email, password} = req.body
+    let {nombre, email, password} = req.body
     
-    if(!email.length){
+    if(!nombre.length){
         res.json({
             'alerta': 'Falta el usuario'
+        })
+    }else if(!email.length){
+        res.json({
+            'alerta': 'Falta el password'
         })
     }else if(!password.length){
         res.json({
             'alerta': 'Falta el password'
         })
     }
+
 
     const usuarios = collection(db, 'usuarios')
 
@@ -87,6 +92,7 @@ app.post('/new-user', (req, res) => {
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(password, salt, (err, hash) => {
                     const data = {
+                        nombre,
                         email,
                         password: hash
                     }
