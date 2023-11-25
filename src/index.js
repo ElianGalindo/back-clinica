@@ -2,7 +2,7 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 import cors from 'cors'
 import { initializeApp } from 'firebase/app'
-import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore'
+import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc, query, where } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyB9KxfukWbezFagY0OKypgPmIXxJgGEPUU",
@@ -113,7 +113,7 @@ app.post('/new-user', (req, res) => {
 })
 
 //Registrar cita
-app.post('/new-cita', (req, res) => {
+app.post('/new-cita', async (req, res) => {
     let { nombre, email, telefono, edad, genero, date, time} = req.body
     if(!nombre.length){
         res.json({
@@ -144,6 +144,15 @@ app.post('/new-cita', (req, res) => {
         res.json({
             'alerta': 'Falta la hora'
         })
+    }
+
+    // Consulta si ya existe un paciente con el mismo correo electrónico
+    const pacientes = collection(db, 'pacientes');
+    const pacienteQuery = query(pacientes, where('email', '==', email));
+    const pacientesObtenidos = await getDocs(pacienteQuery);
+    if (pacientesObtenidos.size === 0) {
+        // No existe un paciente con el mismo correo, mostrar alerta
+        return res.json({ 'alerta': 'No existe un paciente registrado con ese correo' });
     }
 
     const citas = collection(db, 'citas')
