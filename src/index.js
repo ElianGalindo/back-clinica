@@ -212,6 +212,113 @@ app.get('/get-citas', async (req, res) => {
     }
 })
 
+//Registrar paciente
+app.post('/new-paciente', (req, res) => {
+    let { nombre, apellido, email, telefono, nacimiento, edad, genero, direccion, tratamiento, sangre, documento} = req.body
+    if(!nombre.length){
+        res.json({
+            'alerta': 'Falta el nombre'
+        })
+    }else if(!apellido.length){
+        res.json({
+            'alerta': 'Falta el email'
+        })
+    }else if(!email.length){
+        res.json({
+            'alerta': 'Falta el email'
+        })
+    }else if(!telefono.length){
+        res.json({
+            'alerta': 'Falta el telefono'
+        })
+    }else if(!nacimiento.length){
+        res.json({
+            'alerta': 'Falta el email'
+        })
+    }else if(!edad.length){
+        res.json({
+            'alerta': 'Falta la edad'
+        })
+    }
+    else if(!genero.length){
+        res.json({
+            'alerta': 'Falta el genero'
+        })
+    }else if(!direccion.length){
+        res.json({
+            'alerta': 'Falta la fecha'
+        })
+    }else if(!tratamiento.length){
+        res.json({
+            'alerta': 'Falta la hora'
+        })
+    }else if(!sangre.length){
+        res.json({
+            'alerta': 'Falta el email'
+        })
+    }
+
+    const pacientes = collection(db, 'pacientes')
+    getDoc(doc(pacientes, email)).then(paciente => {
+        if (paciente.exists()){
+            
+            res.json({
+                'alert': 'El paciente ya existe '
+            })
+
+        }else{
+            const data = {
+                nombre,
+                apellido,
+                email,
+                telefono,
+                nacimiento, 
+                edad,
+                genero,
+                direccion,
+                tratamiento,
+                sangre,
+                documento
+                
+            }
+            setDoc(doc(pacientes, email), data).then(data => {
+                res.json({
+                    'alert': 'success',
+                    'message': 'Paciente registrado exitosamente',
+                    data
+                })
+            })
+        }
+    }).catch(error => {
+        console.error(error)
+        res.json({
+            'alert': 'Error de conexion'
+        })
+    })
+})
+
+//Traer pacientes
+app.get('/get-pacientes', async (req, res) => {
+    try{
+       const pacientes = [];
+       const data = await collection(db, 'pacientes')
+       const docs = await getDocs(data)
+       docs.forEach((doc) => {
+        pacientes.push(doc.data())
+       })
+        res.json({
+            'alert': 'success',
+             pacientes
+        })
+    }catch (error) {
+        console.error(error)
+        res.json({
+            'alert': 'error getting data',
+            error
+        })
+    }
+})
+
 //Conectar servidor
 app.listen(5020, () => {
     console.log('Servidor trabajando: 5020')
