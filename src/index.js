@@ -30,17 +30,17 @@ app.use(express.json())
 
 //Ruta para login
 app.post('/login', (req, res) => {
-    const { nombre, email, password } = req.body
+    const { nombre, emailD, password } = req.body
     console.log('Datos recibidos en la solicitud:', req.body);
 
-    if(!nombre || !email || !password) {
+    if(!nombre || !emailD || !password) {
         res.json({
             'alert':'faltan datos'
         })
     }
 
     const usuarios = collection(db, 'usuarios')
-    getDoc(doc(usuarios, email))
+    getDoc(doc(usuarios, emailD))
     .then((usuario) => {
         if(!usuario.exists()) {
             res.json({ 'alert':'Correo no registrado' })
@@ -51,7 +51,7 @@ app.post('/login', (req, res) => {
                     let data = usuario.data()
                     res.json({ 
                         'alert':'success',
-                        email: data.email,
+                        email: data.emailD,
                     })
                 } else{
                     res.json({ 'alert':'Contrasena Incorrecta'})
@@ -60,16 +60,15 @@ app.post('/login', (req, res) => {
         }
     })
 })
-
 //Registra usuario
 app.post('/new-user', (req, res) => {
-    let {nombre, email, password} = req.body
+    let {nombre, emailD, password} = req.body
     
     if(!nombre.length){
         res.json({
             'alerta': 'Falta el usuario'
         })
-    }else if(!email.length){
+    }else if(!emailD.length){
         res.json({
             'alerta': 'Falta el password'
         })
@@ -82,7 +81,7 @@ app.post('/new-user', (req, res) => {
 
     const usuarios = collection(db, 'usuarios')
 
-    getDoc(doc(usuarios, email)).then(user => {
+    getDoc(doc(usuarios, emailD)).then(user => {
         if (user.exists()){
             res.json({
                 'alert': 'El usuario ya existe'
@@ -93,10 +92,10 @@ app.post('/new-user', (req, res) => {
                 bcrypt.hash(password, salt, (err, hash) => {
                     const data = {
                         nombre,
-                        email,
+                        emailD,
                         password: hash
                     }
-                    setDoc(doc(usuarios, email), data).then(data => {
+                    setDoc(doc(usuarios, emailD), data).then(data => {
                         res.json({
                             'alert': 'success',
                             data
@@ -305,6 +304,7 @@ app.post('/new-paciente', (req, res) => {
         })
     })
 })
+
 
 //Traer pacientes
 app.get('/get-pacientes', async (req, res) => {
