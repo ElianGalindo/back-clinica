@@ -305,7 +305,6 @@ app.post('/new-paciente', (req, res) => {
     })
 })
 
-
 //Traer pacientes
 app.get('/get-pacientes', async (req, res) => {
     try{
@@ -326,6 +325,51 @@ app.get('/get-pacientes', async (req, res) => {
             error
         })
     }
+})
+
+//Borrar pacientes
+app.post('/delete-paciente',(req, res) => {
+    const email = req.body.email
+    if (!email) {
+        res.json({
+            'alert': 'error',
+            'message': 'El correo electrónico es necesario para eliminar el paciente.'
+        });
+        return;
+    }
+    deleteDoc(doc(collection(db, 'pacientes'), email))
+    .then(data => {
+        res.json({
+            'alert': 'success'
+        })
+    })
+    .catch(err => {
+        res.json({
+            'alert': 'error',
+            err
+        })
+    })
+})
+
+//Editar paciente
+app.post('/edit-paciente', async (req,res) => {
+    const {nombre, apellido, email, telefono, nacimiento, edad, genero, direccion, tratamiento, sangre, documento} = req.body
+    const edited = await updateDoc(doc(db, 'pacientes', email), {
+        nombre,
+        apellido,
+        telefono,
+        nacimiento,
+        edad,
+        genero,
+        direccion,
+        tratamiento,
+        sangre,
+        documento
+    })
+    res.json({
+        'alert': 'edited',
+        edited
+    })
 })
 
 //Conectar servidor
