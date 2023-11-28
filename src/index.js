@@ -222,7 +222,7 @@ app.get('/get-citas', async (req, res) => {
 
 //Registrar paciente
 app.post('/new-paciente', (req, res) => {
-    let { nombre, apellido, email, telefono, nacimiento, edad, genero, direccion, tratamiento, sangre, documento} = req.body
+    let { nombre, apellido, email, telefono, nacimiento, edad, genero, direccion, tratamiento, sangre } = req.body
     if(!nombre.length){
         res.json({
             'alerta': 'Falta el nombre'
@@ -286,7 +286,7 @@ app.post('/new-paciente', (req, res) => {
                 direccion,
                 tratamiento,
                 sangre,
-                documento
+                
                 
             }
             setDoc(doc(pacientes, email), data).then(data => {
@@ -353,7 +353,7 @@ app.post('/delete-paciente',(req, res) => {
 
 //Editar paciente
 app.post('/edit-paciente', async (req,res) => {
-    const {nombre, apellido, email, telefono, nacimiento, edad, genero, direccion, tratamiento, sangre, documento} = req.body
+    const {nombre, apellido, email, telefono, nacimiento, edad, genero, direccion, tratamiento, sangre} = req.body
     const edited = await updateDoc(doc(db, 'pacientes', email), {
         nombre,
         apellido,
@@ -364,7 +364,7 @@ app.post('/edit-paciente', async (req,res) => {
         direccion,
         tratamiento,
         sangre,
-        documento
+    
     })
     res.json({
         'alert': 'edited',
