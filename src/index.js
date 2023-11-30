@@ -397,6 +397,26 @@ app.get('/get-calendario', async (req, res) => {
         })
     }
 })
+//Linea del tiempo
+app.get('/get-dias', async (req, res) => {
+    try{
+       const citas = [];
+       const data = await collection(db, 'citas')
+       const docs = await getDocs(data)
+       docs.forEach((doc) => {
+        citas.push(doc.data())
+        })
+        res.json({
+            'alert': 'success',
+            citas
+        })
+    }catch (error) {
+        res.json({
+            'alert': 'error getting data',
+            error
+        })
+    }
+})
 
 //Conectar servidor
 app.listen(5020, () => {
