@@ -113,7 +113,7 @@ app.post('/new-user', (req, res) => {
 
 //Registrar cita
 app.post('/new-cita', async (req, res) => {
-    let { nombre, email, telefono, edad, genero, date, time} = req.body
+    let { nombre, email, telefono, edad, genero, date, time, motivo} = req.body
     if(!nombre.length){
         res.json({
             'alerta': 'Falta el nombre'
@@ -140,6 +140,10 @@ app.post('/new-cita', async (req, res) => {
             'alerta': 'Falta la fecha'
         })
     }else if(!time.length){
+        res.json({
+            'alerta': 'Falta la hora'
+        })
+    }else if(!motivo.length){
         res.json({
             'alerta': 'Falta la hora'
         })
@@ -172,7 +176,8 @@ app.post('/new-cita', async (req, res) => {
                 edad,
                 genero,
                 date,
-                time
+                time,
+                motivo
             }
             setDoc(doc(citas, `${formattedDate}-${formattedTime}`), data).then(data => {
                 res.json({
@@ -370,6 +375,27 @@ app.post('/edit-paciente', async (req,res) => {
         'alert': 'edited',
         edited
     })
+})
+
+//Traer citas para calendario
+app.get('/get-calendario', async (req, res) => {
+    try{
+       const citas = [];
+       const data = await collection(db, 'citas')
+       const docs = await getDocs(data)
+       docs.forEach((doc) => {
+        citas.push(doc.data())
+        })
+        res.json({
+            'alert': 'success',
+            citas
+        })
+    }catch (error) {
+        res.json({
+            'alert': 'error getting data',
+            error
+        })
+    }
 })
 
 //Conectar servidor
